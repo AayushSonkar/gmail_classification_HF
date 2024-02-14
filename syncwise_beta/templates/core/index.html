@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syncwise</title>
+  <link rel="icon" href="../images/logo.png" sizes="32x32" type="image/png">
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-image: url("path/to/colorful-background.jpg");
+      background-size: cover;
+    }
+
+    header {
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.6)), url("path/to/mail-themed-pattern.png");
+      background-size: cover;
+    }
+
+    .animate-pulse {
+      color: #ff9800;
+    }
+
+    button {
+      border: 2px solid #ff9800;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #ff9800;
+    }
+
+    footer {
+      background-color: #f0f0f0;
+    }
+
+    /* Responsive styling */
+    @media (max-width: 768px) {
+      header {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <header class="flex flex-col items-center justify-center h-screen px-4 text-white">
+    <img src="../images/logos.svg" alt="" class="w-32 mb-4"> 
+    <h1 id="123" class="text-4xl md:text-5xl font-bold animate-pulse">Welcome to Syncwise Beta</h1>
+    <p class="text-md md:text-xl text-gray-300 mt-2 md:mt-4 animate-fade-in-up">Let's Enhance Your Mailing Experience</p>
+    <p class="text-md md:text-s text-gray-900 mt-2 md:mt-4 animate-fade-in-up">We will fetch your latest 10 unread Messages Only </p>
+    <button onclick="callTableFunction()" class="mt-6 md:mt-8 py-2 px-4 text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 ease-in-out animate-bounce">Go Syncwise</button>
+  </header>
+
+  <main class="container mx-auto px-4">
+    <!-- Set max-width to 80% for the table -->
+    <div class="max-w-screen-lg mx-auto mt-8">
+      <div id="output-container"></div>
+    </div>
+  </main>
+  
+  <footer class="text-center text-gray-600 py-4 px-4">
+    © 2024 Syncwise.io
+  </footer>
+
+  <script>
+    function callTableFunction() {
+        // Make an AJAX request to the Django view function
+        fetch('/go_syncwise/')
+            .then(response => response.json())
+            .then(data => {
+                // Update the output container with the result
+                const tableHtml = generateTableHtml(data.result);
+                document.getElementById('output-container').innerHTML = tableHtml;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    function generateTableHtml(data) {
+        // Generate HTML for the table with headers "From", "Content", and "Topic"
+        let tableHtml = '<table class="min-w-full bg-white border border-gray-300 divide-y divide-gray-200 overflow-hidden rounded-lg shadow-md mt-4"><thead class="bg-gray-50"><tr><th scope="col" class="px-6 py-3 text-left text-sm md:text-xs font-medium text-gray-500 uppercase tracking-wider">From</th><th scope="col" class="px-6 py-3 text-left text-sm md:text-xs font-medium text-gray-500 uppercase tracking-wider">Content</th><th scope="col" class="px-6 py-3 text-left text-sm md:text-xs font-medium text-gray-500 uppercase tracking-wider">Topic</th></tr></thead><tbody class="divide-y divide-gray-200">';
+
+        // Add rows with data
+        for (let i = 0; i < data.from.length; i++) {
+            tableHtml += `<tr class="hover:bg-gray-100"><td class="px-6 py-4 whitespace-normal text-sm md:text-xs">${data.from[i]}</td><td class="px-6 py-4 whitespace-normal text-sm md:text-xs">${data.content[i]}</td><td class="px-6 py-4 whitespace-normal text-sm md:text-xs">${data.topic[i]}</td></tr>`;
+        }
+
+        tableHtml += '</tbody></table>';
+
+        return tableHtml;
+    }
+  </script>
+
+</body>
+</html>
